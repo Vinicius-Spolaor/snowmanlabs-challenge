@@ -5,7 +5,9 @@ import com.snowmanlabs.challenge.dto.BookDto;
 import com.snowmanlabs.challenge.exception.BusinessException;
 import com.snowmanlabs.challenge.model.Book;
 import com.snowmanlabs.challenge.repository.BookRepository;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.snowmanlabs.challenge.service.interfaces.IBookService;
+import com.snowmanlabs.challenge.service.interfaces.IEmailService;
+import com.snowmanlabs.challenge.service.interfaces.INotificationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,17 +20,19 @@ public class BookService implements IBookService {
 
     private final BookRepository bookRepository;
     private final UserService userService;
-    private final RabbitTemplate rabbitTemplate;
+    private final INotificationService notificationService;
+    private final IEmailService emailService;
 
-    public BookService(BookRepository bookRepository, UserService userService, RabbitTemplate rabbitTemplate) {
+    public BookService(BookRepository bookRepository, UserService userService, NotificationService notificationService, IEmailService emailService) {
         this.bookRepository = bookRepository;
         this.userService = userService;
-        this.rabbitTemplate = rabbitTemplate;
+        this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     @Override
     public Page<BookDto> listBooks(Pageable pageable) {
-        rabbitTemplate.convertAndSend("books-events", "Listing books");
+        notificationService.sendMessage("Listing books");
         return bookRepository.findAll(pageable).map(BookDto::new);
     }
 
@@ -47,21 +51,21 @@ public class BookService implements IBookService {
                            .stream().map(BookDto::new).toList();
         }
 
-        rabbitTemplate.convertAndSend("books-events", "Searched books");
+        notificationService.sendMessage("Searched books");
         return searchResult;
     }
 
     @Override
     public BookDto saveBook(Book book) {
         var saved = bookRepository.save(book);
-        rabbitTemplate.convertAndSend("books-events", "Created book: " + saved.getTitle());
+        notificationService.sendMessage("Created book: " + saved.getTitle());
         return new BookDto(saved);
     }
 
     @Override
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
-        rabbitTemplate.convertAndSend("books-events", "Deleted book: " + id);
+        notificationService.sendMessage("Deleted book: " + id);
     }
 
     @Override
@@ -73,7 +77,7 @@ public class BookService implements IBookService {
             return bookRepository.save(book);
         }).orElseThrow(() -> new BusinessException("Book not found with the id: " + id));
 
-        rabbitTemplate.convertAndSend("books-events", "Updated book: " + updated.getTitle());
+        notificationService.sendMessage("Updated book: " + updated.getTitle());
         return new BookDto(updated);
     }
 
@@ -93,14 +97,10 @@ public class BookService implements IBookService {
         bookRepository.save(book);
 
         var message = "Book " + book.getTitle() + " reserved by " + userEmail;
-        rabbitTemplate.convertAndSend("books-events", message);
+        notificationService.sendMessage(message);
 
-        sendConfirmationEmail(userEmail, book);
-
+        emailService.sendConfirmationEmail(userEmail, book.getTitle());
         return new BookDto(book);
     }
 
-    public void sendConfirmationEmail(String email, Book book) {
-        // #TODO: implementar envio email
-    }
 }
