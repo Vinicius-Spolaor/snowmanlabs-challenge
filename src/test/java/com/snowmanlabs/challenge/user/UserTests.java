@@ -21,7 +21,7 @@ class UserTests {
 
 	@Test
 	void shouldCreateUser() throws Exception {
-		var userJson = "{\"name\":\"Test Name\",\"email\":\"test@email.com\"}";
+		var userJson = "{\"name\":\"Test Name\",\"email\":\"test@email.com\",\"password\":\"test\"}";
 
 		this.mockMvc.perform(MockMvcRequestBuilders.post(USER_URL + "/create")
 						.contentType(MediaType.APPLICATION_JSON)

@@ -1,4 +1,4 @@
-package com.snowmanlabs.challenge.service;
+package com.snowmanlabs.challenge.service.interfaces;
 
 import com.snowmanlabs.challenge.dto.UserDto;
 import com.snowmanlabs.challenge.model.User;
