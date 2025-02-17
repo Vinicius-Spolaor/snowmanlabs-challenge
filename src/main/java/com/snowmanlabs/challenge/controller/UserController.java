@@ -3,6 +3,7 @@ package com.snowmanlabs.challenge.controller;
 import com.snowmanlabs.challenge.dto.UserDto;
 import com.snowmanlabs.challenge.model.User;
 import com.snowmanlabs.challenge.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

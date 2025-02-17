@@ -5,22 +5,18 @@ import com.snowmanlabs.challenge.exception.BusinessException;
 import com.snowmanlabs.challenge.model.User;
 import com.snowmanlabs.challenge.repository.UserRepository;
 import com.snowmanlabs.challenge.service.interfaces.IUserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements IUserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDto saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         var savedUser = userRepository.save(user);
         return new UserDto(savedUser);
     }

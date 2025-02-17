@@ -3,6 +3,7 @@ package com.snowmanlabs.challenge.controller;
 import com.snowmanlabs.challenge.dto.BookDto;
 import com.snowmanlabs.challenge.model.Book;
 import com.snowmanlabs.challenge.service.BookService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
