@@ -22,7 +22,7 @@ public class EmailService implements IEmailService {
             var message = mailSender.createMimeMessage();
             var helper = new MimeMessageHelper(message, true);
             helper.setTo(email);
-            helper.setSubject("Confirming book reservation!");
+            helper.setSubject("Book reservation confirmed.");
             helper.setText("Your book '" + bookTitle + "' reservation was confirmed!");
 
             mailSender.send(message);
